@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mariam KABA — Career OS</title>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #0B1426; font-family: 'Inter', system-ui, -apple-system, sans-serif; }
+    ::-webkit-scrollbar { width: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(255,255,255,.04); }
+    ::-webkit-scrollbar-thumb { background: rgba(201,168,76,.35); border-radius: 3px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(201,168,76,.6); }
+    input, select, textarea, button { font-family: inherit; }
+    button { cursor: pointer; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useRef, useEffect } = React;
+
+    const G = {
+      navy:"#0B1426", navyM:"#0F1E35", navyL:"#1B3A6B",
+      gold:"#C9A84C", goldL:"#E8C96B", goldD:"#8B6520",
+      slate:"#8892B0", slateL:"#CCD6F6", white:"#E8E0D0",
+      green:"#4ECBA0", teal:"#1D9E75", coral:"#D85A30",
+      blue:"#5B8DB8", purple:"#9B6BC0", red:"#C06B6B", amber:"#C9A84C",
+    };
+
+    const PROFILE = `Tu es un Mentor RH Senior expert, direct, bienveillant, sans complaisance. Tu accompagnes Mariam KABA dans sa recherche d'emploi active.
+
+PROFIL COMPLET :
+- Nom : Mariam KABA (aussi connue sous Yasmine KABA)
+- Localisation : Abidjan, Cocody Angré, Côte d'Ivoire
+- Téléphone : (+225) 05 84 23 07 24
+- Email : yasminekaba.pro@yahoo.com
+- LinkedIn : https://www.linkedin.com/in/mariam-k-office-manager-rh
+- Portfolio : https://yasmine.dymama.com
+- Contexte : Musulmane voilée → cibler ONG, multinationales, entreprises étrangères en remote
+- Disponibilité : Immédiate | Deadline : poste dans 3 semaines
+
+OBJECTIFS SALARIAUX :
+- Présentiel Abidjan : 300 000 FCFA net minimum
+- Full Remote : 400 000 FCFA minimum (~600€/mois)
+
+POSTES CIBLÉS : Office Manager 360°, Executive Assistant, Assistante de Direction, Coordinatrice Opérationnelle, Virtual Assistant remote
+
+EXPÉRIENCES :
+1. Assistante Évènementiel — Dim Voyages (Oct 2025 - présent) : logistique internationale, visas, réservations, évènementiel corporate, facturation
+2. Office Manager — Ivoir Trips International (Fév 2024 - Oct 2025) : +30 projets MICE, agenda DG, préparation CODIR, RH 15 collaborateurs, fournisseurs, Akan festival, Ivorian Comedy Club, Jeudis abidjanais
+3. Ass. Marketing & Com — Ivoir Trips (Nov 2022 - Jan 2024) : accueil +600 participants, contenus digitaux, WhatsApp Business, Instagram, Facebook
+4. Commerciale itinérante — BWAN Technologies (Oct 2021 - Mars 2022) : portefeuille clients, offres commerciales, SAV
+5. Facilitatrice bénévole (2021-2022) : ateliers éducatifs enfants
+
+COMPÉTENCES : Microsoft Office (Excel certifié), Google Workspace, Odoo, Trello, Asana, Canva, Zoom, Teams, outils IA, billetterie
+LANGUES : Français (maternel), Anglais B2 certifié EFSET
+FORMATIONS : Certificat Responsable RH en cours (Glory Management, fin avril 2026), Licence Pro Marketing & Pub PIGIER CI, BTS Gestion Commerciale PIGIER CI, Certification Excel Office 2016, CLOM Tourisme durable OIF
+
+RÈGLES :
+1. Toujours appeler la candidate "Mariam"
+2. Répondre en français sauf si anglais demandé
+3. Direct, concret, actionnable — jamais vague
+4. Exemples tirés de ses vraies expériences
+5. Tenir compte du contexte voile/Abidjan pour le ciblage
+6. Pour branding/contenu : textes directement copiables-collables
+7. Objectif 3 semaines : prioriser les actions à fort impact immédiat`;
+
+    const MODULES = [
+      { id:"cv", icon:"▤", label:"Mon CV", color:G.gold, desc:"Analyse ATS, optimisation, FR/EN",
+        prompt:`MODE CV. Aide Mariam à analyser, améliorer et optimiser son CV. Propose des reformulations avec métriques. Adapte à une offre si elle t'en colle une. Son CV actuel : Office Manager +30 projets, RH 15 collaborateurs, Akan festival, Ivorian Comedy Club. Toujours utiliser MARIAM KABA sur les documents.`,
+        welcome:"Parfait, on attaque le CV ! Tu veux que j'analyse ton CV existant, que je l'adapte à une offre précise, ou que je génère une version optimisée ATS ? Colle l'offre ciblée si tu en as une."
+      },
+      { id:"lm", icon:"✉", label:"Lettre de Motivation", color:G.blue, desc:"Générée pour chaque offre",
+        prompt:`MODE LETTRE. Génère des lettres personnalisées selon l'offre que Mariam décrit. Adapte le ton : ONG (impact social), multinationale (résultats), startup remote (agilité). Structure : accroche forte → valeur ajoutée avec chiffres → adéquation → call to action. Toujours signer Mariam KABA.`,
+        welcome:"Génération de lettre activée. Colle-moi l'offre (ou décris le poste et l'entreprise) et je rédige une lettre percutante calibrée sur ton profil. Plus tu me donnes de détails, meilleure sera la lettre."
+      },
+      { id:"entretien", icon:"◎", label:"Préparation Entretien", color:G.red, desc:"Simulation STAR, FR & EN",
+        prompt:`MODE ENTRETIEN. Entraîne Mariam avec la méthode STAR. Utilise ses vraies expériences (Dim Voyages, Ivoir Trips, BWAN, +30 projets, +600 participants, Akan festival, Jeudis abidjanais). Pose de vraies questions Office Manager/Executive Assistant, corrige, reformule. Gère les questions sensibles (voile, prétentions). Sois exigeant mais bienveillant.`,
+        welcome:"Simulation activée. Je peux te poser de vraies questions et corriger tes réponses, faire une simulation complète, ou t'aider sur une question qui te bloque. Dis-moi ce qu'on travaille."
+      },
+      { id:"branding", icon:"◆", label:"Personal Branding", color:G.purple, desc:"LinkedIn · Posts · Visibilité",
+        prompt:`MODE BRANDING. Crée du contenu LinkedIn directement copiable-collable pour Mariam. Ses angles : Office Manager CI, coulisses évènementiel ivoirien (Akan festival, Ivorian Comedy Club), outils pro (Odoo/Trello/Excel), admin RH Afrique, remote depuis Abidjan, femme pro ambitieuse. Formats : storytelling, liste de conseils, question communauté, before/after, leçon apprise. Hashtags : #OfficeManager #AbidjanPro #CoteIvoire #Remote #ExecutiveAssistant. Planning lundi/mercredi/vendredi. Produis toujours du contenu directement utilisable.`,
+        welcome:"Module branding activé ! Je peux créer des posts LinkedIn prêts à publier aujourd'hui, définir ta stratégie sur 3 semaines, ou rédiger une Note de Solution pour approcher une entreprise directement. Par où tu veux commencer ?"
+      },
+      { id:"negociation", icon:"₣", label:"Négociation Salariale", color:G.gold, desc:"300k FCF / 400k remote",
+        prompt:`MODE NÉGOCIATION. Cibles : 300 000 FCFA net min présentiel, 400 000 FCFA min remote (~600€). Scripts pour répondre aux prétentions, technique d'ancrage, réponse à une contre-offre basse, évaluation d'un package complet. Donne des benchmarks salariaux pour son profil sur le marché ivoirien et remote francophone.`,
+        welcome:"Parlons chiffres — sans tabou. Ton profil justifie 300 000 FCFA minimum à Abidjan et 400 000+ en remote. Je vais t'apprendre à défendre ces montants avec assurance. Tu as une offre à évaluer ou on s'entraîne ?"
+      },
+      { id:"relance", icon:"◉", label:"Relance & Suivi", color:G.blue, desc:"Relancer sans paraître désespérée",
+        prompt:`MODE RELANCE. Scripts de relance email (J+7, J+14, J+21), messages post-entretien, messages LinkedIn de relance. Explique quand relancer, combien de fois, quand passer à autre chose. Tout professionnel, chaleureux, jamais désespéré.`,
+        welcome:"La relance bien faite fait souvent toute la différence. Tu veux un script de relance, un message post-entretien, un tableau de suivi des candidatures, ou un message LinkedIn pour approcher un recruteur ?"
+      },
+      { id:"offres", icon:"✦", label:"Offres & Opportunités", color:G.teal, desc:"Abidjan 300k+ & Remote 400k+",
+        prompt:`MODE OFFRES. Guide Mariam pour trouver des offres alignées. ABIDJAN : Emploi.ci, JobnetAfrica, Jobberman CI, LinkedIn, sites carrières (Orange, MTN, Nestlé, Total, Bolloré, CFAO, Ecobank). REMOTE : We Work Remotely, Remote.co, Malt, Welcome to the Jungle, LinkedIn remote. CIBLES PRIORITAIRES : ONG (PNUD, GIZ, AFD, IRC), cabinets RH (Africsearch, Michael Page Africa), entreprises françaises/belges/canadiennes.`,
+        welcome:"Cherchons des opportunités concrètes ! Tu vises du présentiel à Abidjan, du full remote, ou les deux en parallèle ? Des secteurs à prioriser — ONG, banques, multinationales, startups ?"
+      },
+      { id:"conseil", icon:"★", label:"Conseil & Orientation", color:G.teal, desc:"Stratégie · Formations · Carrière",
+        prompt:`MODE CONSEIL. GPS carrière de Mariam. Aide-la à évaluer des offres reçues, identifier des formations courtes et certifiantes accessibles depuis Abidjan (gratuites ou peu coûteuses), comprendre les secteurs porteurs, définir sa stratégie pour décrocher du remote, prioriser ses actions selon l'urgence des 3 semaines. Direct et séquencé.`,
+        welcome:"Pose-moi n'importe quelle question stratégique : évaluer une offre, choisir une formation, prioriser tes actions cette semaine, décrocher du remote. Je suis là."
+      },
+    ];
+
+    const BRAGS_INIT = [
+      { id:1, date:"2024-06", titre:"Coordination +30 projets MICE", categorie:"Management", impact:"+30 projets livrés, 0 annulation", score:92, type:"victoire", competences:["Coordination","Gestion projet"] },
+      { id:2, date:"2024-09", titre:"Akan Festival & Ivorian Comedy Club", categorie:"Évènementiel", impact:"Flux +600 participants gérés", score:88, type:"projet", competences:["Évènementiel","Front office"] },
+      { id:3, date:"2024-11", titre:"Administration RH 15 collaborateurs", categorie:"RH", impact:"Onboarding, paie, congés optimisés", score:85, type:"leadership", competences:["RH","Administration"] },
+      { id:4, date:"2025-03", titre:"Logistique internationale Dim Voyages", categorie:"Opérations", impact:"Visas + hôtels + transferts zéro incident", score:90, type:"victoire", competences:["Logistique","International"] },
+    ];
+
+    const CTBADGE = { victoire:G.gold, negociation:G.teal, projet:G.blue, leadership:G.purple };
+
+    const s = {
+      app:{ background:G.navy, minHeight:"100vh", fontFamily:"'Inter', system-ui,-apple-system,sans-serif", color:G.white, display:"flex", flexDirection:"column" },
+      hdr:{ background:"rgba(0,0,0,.35)", borderBottom:`1px solid ${G.goldD}50`, padding:"13px 18px", display:"flex", alignItems:"center", gap:12, flexShrink:0 },
+      logoMark:{ width:38, height:38, background:G.gold, borderRadius:10, display:"flex", alignItems:"center", justifyContent:"center", fontSize:16, fontWeight:800, color:G.navy, flexShrink:0 },
+      body:{ flex:1, display:"flex", overflow:"hidden" },
+      sidebar:{ width:200, flexShrink:0, borderRight:`1px solid rgba(255,255,255,.06)`, padding:"12px 8px", overflowY:"auto", display:"flex", flexDirection:"column", gap:4 },
+      nb:(a,c)=>({ padding:"9px 10px", background:a?`${c}22`:"rgba(255,255,255,.03)", border:`1px solid ${a?c+"55":"rgba(255,255,255,.06)"}`, borderRadius:9, cursor:"pointer", textAlign:"left", width:"100%", color:G.white, transition:"all .18s" }),
+      content:{ flex:1, display:"flex", flexDirection:"column", overflow:"hidden" },
+      card:{ background:G.navyM, border:`1px solid ${G.navyL}`, borderRadius:11, padding:"16px" },
+      cardG:{ background:G.navyM, border:`1px solid ${G.goldD}50`, borderRadius:11, padding:"16px" },
+      secT:{ fontSize:10, fontWeight:700, color:G.gold, textTransform:"uppercase", letterSpacing:".1em", marginBottom:10 },
+      badge:(c)=>({ background:c+"22", color:c, fontSize:10, padding:"2px 8px", borderRadius:20, fontWeight:700, border:`1px solid ${c}44`, whiteSpace:"nowrap" }),
+      btn:{ background:G.gold, color:G.navy, border:"none", borderRadius:8, padding:"9px 16px", fontWeight:800, fontSize:12, cursor:"pointer", flexShrink:0 },
+      btnO:{ background:"none", color:G.gold, border:`1px solid ${G.goldD}`, borderRadius:8, padding:"8px 14px", fontSize:12, cursor:"pointer" },
+      inp:{ background:G.navyL, border:`1px solid ${G.navyL}`, borderRadius:8, padding:"9px 12px", color:G.white, fontSize:13, outline:"none", boxSizing:"border-box" },
+      ta:{ background:G.navyL, border:`1px solid ${G.navyL}`, borderRadius:8, padding:"9px 12px", color:G.white, fontSize:13, width:"100%", outline:"none", resize:"vertical", boxSizing:"border-box", fontFamily:"inherit" },
+      barBg:{ background:G.navyL, borderRadius:4, height:7, flex:1, overflow:"hidden" },
+      bar:(v,c)=>({ width:Math.min(v,100)+"%", height:"100%", background:c||G.gold, borderRadius:4 }),
+      kpi:{ background:G.navyL, borderRadius:9, padding:"12px", textAlign:"center" },
+      kpiN:{ fontSize:24, fontWeight:800, color:G.gold },
+      kpiL:{ fontSize:9, color:G.slate, textTransform:"uppercase", letterSpacing:".06em", marginTop:2 },
+      cb:(r)=>({ maxWidth:"82%", padding:"11px 14px", borderRadius:r==="mentor"?"4px 14px 14px 14px":"14px 4px 14px 14px", background:r==="mentor"?G.navyL:G.goldD+"55", fontSize:13, lineHeight:1.65, color:G.white, alignSelf:r==="mentor"?"flex-start":"flex-end", border:r==="mentor"?`1px solid ${G.navyL}`:`1px solid ${G.goldD}` }),
+      g2:{ display:"grid", gridTemplateColumns:"1fr 1fr", gap:14 },
+    };
+
+    function fmt(t){
+      return t
+        .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+        .replace(/\*(.*?)\*/g,"<em>$1</em>")
+        .replace(/`(.*?)`/g,`<code style="background:rgba(201,168,76,.15);padding:1px 5px;border-radius:3px;font-size:11px">$1</code>`)
+        .replace(/\n/g,"<br/>");
+    }
+
+    async function callAI(system, messages) {
+      const res = await fetch("https://api.anthropic.com/v1/messages", {
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({ model:"claude-haiku-4-5-20251001", max_tokens:900, system, messages })
+      });
+      const data = await res.json();
+      return data.content?.map(c=>c.text||"").join("") || "Une erreur est survenue.";
+    }
+
+    function App() {
+      const [tab, setTab] = useState("dashboard");
+      const [activeMod, setActiveMod] = useState(null);
+      const [chat, setChat] = useState([]);
+      const [hist, setHist] = useState([]);
+      const [input, setInput] = useState("");
+      const [loading, setLoading] = useState(false);
+      const [brags, setBrags] = useState(BRAGS_INIT);
+      const [showAdd, setShowAdd] = useState(false);
+      const [nb, setNb] = useState({ titre:"", categorie:"Management", impact:"", type:"victoire", score:80, competences:"" });
+      const [quickResult, setQuickResult] = useState("");
+      const [quickLoading, setQuickLoading] = useState(false);
+      const chatEnd = useRef();
+      const inputRef = useRef();
+
+      useEffect(()=>{ chatEnd.current?.scrollIntoView({behavior:"smooth"}); }, [chat, loading]);
+
+      function openMod(mod) {
+        setActiveMod(mod);
+        setTab("chat");
+        setChat([{ role:"mentor", text:mod.welcome }]);
+        setHist([]);
+        setInput("");
+        setTimeout(()=>inputRef.current?.focus(), 100);
+      }
+
+      async function sendChat() {
+        if (!input.trim() || loading || !activeMod) return;
+        const msg = input.trim();
+        setInput("");
+        const newChat = [...chat, { role:"user", text:msg }];
+        setChat(newChat);
+        const newHist = [...hist, { role:"user", content:msg }];
+        setLoading(true);
+        try {
+          const reply = await callAI(`${PROFILE}\n\n${activeMod.prompt}\nAppelle toujours la candidate Mariam.`, newHist);
+          setChat([...newChat, { role:"mentor", text:reply }]);
+          setHist([...newHist, { role:"assistant", content:reply }]);
+        } catch {
+          setChat([...newChat, { role:"mentor", text:"Erreur de connexion. Réessaie dans un instant." }]);
+        }
+        setLoading(false);
+      }
+
+      async function runQuick(promptText, btnId) {
+        setQuickLoading(btnId);
+        setQuickResult("");
+        try {
+          const reply = await callAI(PROFILE, [{ role:"user", content:promptText }]);
+          setQuickResult(reply);
+        } catch { setQuickResult("Erreur. Réessaie."); }
+        setQuickLoading(false);
+      }
+
+      function addBrag() {
+        if (!nb.titre || !nb.impact) return;
+        setBrags([...brags, { ...nb, id:Date.now(), date:new Date().toISOString().slice(0,7), competences:nb.competences?nb.competences.split(",").map(c=>c.trim()):[] }]);
+        setNb({ titre:"", categorie:"Management", impact:"", type:"victoire", score:80, competences:"" });
+        setShowAdd(false);
+      }
+
+      const avgScore = Math.round(brags.reduce((a,b)=>a+b.score,0)/brags.length);
+
+      return (
+        <div style={s.app}>
+          <div style={s.hdr}>
+            <div style={s.logoMark}>MK</div>
+            <div style={{flex:1}}>
+              <div style={{fontSize:14,fontWeight:800,color:G.gold,letterSpacing:".04em"}}>MARIAM KABA — Career OS</div>
+              <div style={{fontSize:10,color:G.slate}}>Office Manager 360° · Abidjan &amp; Remote · Objectif : poste en 3 semaines</div>
+            </div>
+            <span style={s.badge(G.green)}>● Actif</span>
+            {activeMod && <button style={{...s.btnO,fontSize:11,padding:"5px 12px"}} onClick={()=>{setActiveMod(null);setTab("dashboard")}}>← Retour</button>}
+          </div>
+
+          <div style={s.body}>
+            {/* SIDEBAR */}
+            <div style={s.sidebar}>
+              <div style={{fontSize:9,color:G.slate,letterSpacing:".14em",textTransform:"uppercase",padding:"2px 6px 6px"}}>Navigation</div>
+              {[{id:"dashboard",icon:"◈",label:"Dashboard"},{id:"brag",icon:"✦",label:"Brag Document"}].map(t=>(
+                <button key={t.id} style={s.nb(tab===t.id&&!activeMod,G.gold)} onClick={()=>{setActiveMod(null);setTab(t.id)}}>
+                  <div style={{fontSize:11,display:"flex",alignItems:"center",gap:7}}>
+                    <span>{t.icon}</span><span style={{fontWeight:tab===t.id&&!activeMod?700:400}}>{t.label}</span>
+                  </div>
+                </button>
+              ))}
+              <div style={{fontSize:9,color:G.slate,letterSpacing:".14em",textTransform:"uppercase",padding:"10px 6px 6px"}}>Modules IA</div>
+              {MODULES.map(mod=>(
+                <button key={mod.id} style={s.nb(activeMod?.id===mod.id,mod.color)} onClick={()=>openMod(mod)}>
+                  <div style={{display:"flex",alignItems:"center",gap:7}}>
+                    <span style={{fontSize:13,color:mod.color}}>{mod.icon}</span>
+                    <div>
+                      <div style={{fontSize:11,fontWeight:activeMod?.id===mod.id?700:500}}>{mod.label}</div>
+                      <div style={{fontSize:9,color:G.slate,marginTop:1}}>{mod.desc}</div>
+                    </div>
+                  </div>
+                </button>
+              ))}
+              <div style={{marginTop:"auto",paddingTop:12,borderTop:`1px solid rgba(255,255,255,.06)`}}>
+                <div style={{fontSize:9,color:G.slate,textTransform:"uppercase",letterSpacing:".1em",marginBottom:7,paddingLeft:4}}>Profil</div>
+                <div style={{fontSize:10,color:"rgba(232,224,208,.55)",lineHeight:1.9,paddingLeft:4}}>
+                  <div>📍 Abidjan, Cocody Angré</div>
+                  <div>💰 300k · 400k remote</div>
+                  <div>⏰ Deadline : 3 semaines</div>
+                  <div style={{marginTop:4,display:"flex",flexWrap:"wrap",gap:3}}>
+                    {["Excel✓","Odoo","EN B2","Canva","Trello"].map(p=>(
+                      <span key={p} style={{background:"rgba(201,168,76,.13)",border:"1px solid rgba(201,168,76,.28)",borderRadius:20,padding:"1px 7px",fontSize:9,color:G.gold}}>{p}</span>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* MAIN CONTENT */}
+            <div style={s.content}>
+
+              {/* DASHBOARD */}
+              {tab==="dashboard" && !activeMod && (
+                <div style={{flex:1,overflowY:"auto",padding:20}}>
+                  <div style={{marginBottom:16,display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(110px,1fr))",gap:10}}>
+                    {[
+                      {n:brags.length,l:"Victoires"},{n:avgScore+"/100",l:"Score impact"},
+                      {n:"4.5 ans",l:"Expérience"},{n:"3 sem.",l:"Deadline"},
+                    ].map((k,i)=><div key={i} style={s.kpi}><div style={s.kpiN}>{k.n}</div><div style={s.kpiL}>{k.l}</div></div>)}
+                  </div>
+
+                  <div style={{...s.cardG,marginBottom:14,borderLeft:`3px solid ${G.gold}`}}>
+                    <div style={{fontSize:10,color:G.gold,textTransform:"uppercase",letterSpacing:".1em",marginBottom:6}}>Action prioritaire aujourd'hui</div>
+                    <div style={{fontSize:13,color:G.slateL,lineHeight:1.7}}>
+                      Module <strong style={{color:G.gold}}>Personal Branding</strong> — un post LinkedIn publié ce soir peut générer une opportunité dès demain matin. Clique sur "Personal Branding" dans la sidebar.
+                    </div>
+                  </div>
+
+                  <div style={{...s.g2,marginBottom:14}}>
+                    <div style={s.card}>
+                      <div style={s.secT}>Compétences clés</div>
+                      {[
+                        {n:"Coordination & Front Office",v:92},{n:"Administration RH",v:85},
+                        {n:"Évènementiel Corporate",v:90},{n:"Outils digitaux (Odoo/Canva)",v:82},
+                        {n:"Anglais B2",v:75},
+                      ].map((c,i)=>(
+                        <div key={i} style={{marginBottom:9}}>
+                          <div style={{display:"flex",justifyContent:"space-between",fontSize:11,marginBottom:3}}>
+                            <span style={{color:G.slateL}}>{c.n}</span>
+                            <span style={{color:c.v>=88?G.gold:G.blue,fontWeight:700}}>{c.v}%</span>
+                          </div>
+                          <div style={s.barBg}><div style={s.bar(c.v,c.v>=88?G.gold:G.blue)}/></div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div style={s.card}>
+                      <div style={s.secT}>Dernières victoires</div>
+                      {brags.slice(-3).reverse().map(b=>(
+                        <div key={b.id} style={{padding:"8px 0",borderBottom:`1px solid ${G.navyL}`,display:"flex",justifyContent:"space-between",alignItems:"center"}}>
+                          <div>
+                            <div style={{fontSize:12,fontWeight:600,color:G.slateL}}>{b.titre}</div>
+                            <div style={{fontSize:10,color:G.slate,marginTop:2}}>{b.impact}</div>
+                          </div>
+                          <span style={{fontSize:18,fontWeight:800,color:G.gold,marginLeft:10}}>{b.score}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={s.card}>
+                    <div style={s.secT}>Benchmark salarial — Abidjan 2026</div>
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(180px,1fr))",gap:10}}>
+                      {[
+                        {p:"Office Manager CI",r:"250-500K FCFA",note:"Ton objectif : 300K min"},
+                        {p:"Executive Assistant",r:"300-600K FCFA",note:"Profil senior visé"},
+                        {p:"Virtual Assistant Remote",r:"400-800K FCFA",note:"~600-1200€/mois"},
+                        {p:"Administrative Officer ONG",r:"400-700K FCFA",note:"PNUD, GIZ, AFD"},
+                      ].map((b,i)=>(
+                        <div key={i} style={{background:G.navyL,borderRadius:8,padding:"10px 12px"}}>
+                          <div style={{fontSize:11,fontWeight:600,color:G.slateL}}>{b.p}</div>
+                          <div style={{fontSize:13,color:G.gold,fontWeight:700,margin:"3px 0"}}>{b.r}</div>
+                          <div style={{fontSize:10,color:G.slate}}>{b.note}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div style={{marginTop:14}}>
+                    <div style={s.secT}>Modules disponibles — Clique pour accéder</div>
+                    <div style={{display:"grid",gridTemplateColumns:"repeat(auto-fill,minmax(160px,1fr))",gap:10}}>
+                      {MODULES.map(mod=>(
+                        <div key={mod.id} onClick={()=>openMod(mod)} style={{background:G.navyM,border:`1px solid ${G.navyL}`,borderRadius:10,padding:"14px",cursor:"pointer",transition:"all .2s"}}>
+                          <div style={{fontSize:18,color:mod.color,marginBottom:6}}>{mod.icon}</div>
+                          <div style={{fontSize:12,fontWeight:600,color:G.slateL}}>{mod.label}</div>
+                          <div style={{fontSize:10,color:G.slate,marginTop:3}}>{mod.desc}</div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* BRAG DOC */}
+              {tab==="brag" && !activeMod && (
+                <div style={{flex:1,overflowY:"auto",padding:20}}>
+                  <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:14}}>
+                    <div>
+                      <div style={{fontSize:16,fontWeight:800,color:G.gold}}>Brag Document</div>
+                      <div style={{fontSize:11,color:G.slate}}>Tes victoires documentées — ton vrai diplôme</div>
+                    </div>
+                    <button style={s.btn} onClick={()=>setShowAdd(!showAdd)}>+ Victoire</button>
+                  </div>
+                  {showAdd && (
+                    <div style={{...s.cardG,marginBottom:14}}>
+                      <div style={s.secT}>Nouvelle réalisation</div>
+                      <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:10,marginBottom:10}}>
+                        <input style={{...s.inp,width:"100%"}} placeholder="Titre..." value={nb.titre} onChange={e=>setNb({...nb,titre:e.target.value})}/>
+                        <input style={{...s.inp,width:"100%"}} placeholder="Impact chiffré..." value={nb.impact} onChange={e=>setNb({...nb,impact:e.target.value})}/>
+                        <select style={{...s.inp,width:"100%"}} value={nb.type} onChange={e=>setNb({...nb,type:e.target.value})}>
+                          {["victoire","negociation","projet","leadership"].map(t=><option key={t} value={t}>{t}</option>)}
+                        </select>
+                        <select style={{...s.inp,width:"100%"}} value={nb.categorie} onChange={e=>setNb({...nb,categorie:e.target.value})}>
+                          {["Management","RH","Évènementiel","Opérations","Commercial","Digital"].map(c=><option key={c} value={c}>{c}</option>)}
+                        </select>
+                        <input style={{...s.inp,gridColumn:"1/-1",width:"100%"}} placeholder="Compétences liées (séparées par virgule)" value={nb.competences} onChange={e=>setNb({...nb,competences:e.target.value})}/>
+                      </div>
+                      <div style={{marginBottom:10}}>
+                        <div style={{fontSize:11,color:G.slate,marginBottom:4}}>Score d'impact : <span style={{color:G.gold,fontWeight:700}}>{nb.score}/100</span></div>
+                        <input type="range" min="50" max="100" value={nb.score} onChange={e=>setNb({...nb,score:+e.target.value})} style={{width:"100%"}}/>
+                      </div>
+                      <div style={{display:"flex",gap:8}}>
+                        <button style={s.btn} onClick={addBrag}>Enregistrer</button>
+                        <button style={s.btnO} onClick={()=>setShowAdd(false)}>Annuler</button>
+                      </div>
+                    </div>
+                  )}
+                  {brags.map(b=>(
+                    <div key={b.id} style={{...s.card,marginBottom:10}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"flex-start"}}>
+                        <div style={{flex:1}}>
+                          <div style={{display:"flex",gap:7,marginBottom:5,flexWrap:"wrap"}}>
+                            <span style={s.badge(CTBADGE[b.type]||G.gold)}>{b.type}</span>
+                            <span style={s.badge(G.slate)}>{b.categorie}</span>
+                            <span style={{fontSize:10,color:G.slate}}>{b.date}</span>
+                          </div>
+                          <div style={{fontSize:13,fontWeight:700,color:G.slateL,marginBottom:3}}>{b.titre}</div>
+                          <div style={{fontSize:11,color:G.slate,marginBottom:6}}>{b.impact}</div>
+                          <div style={{display:"flex",gap:5,flexWrap:"wrap"}}>
+                            {(b.competences||[]).map((c,i)=><span key={i} style={{...s.badge(G.purple),fontSize:9}}>{c}</span>)}
+                          </div>
+                        </div>
+                        <div style={{textAlign:"right",marginLeft:12,minWidth:48}}>
+                          <div style={{fontSize:22,fontWeight:800,color:b.score>=90?G.gold:G.blue}}>{b.score}</div>
+                          <div style={{fontSize:9,color:G.slate}}>IMPACT</div>
+                        </div>
+                      </div>
+                      <div style={{...s.barBg,marginTop:10}}><div style={s.bar(b.score,b.score>=90?G.gold:G.blue)}/></div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
+              {/* CHAT MODULE */}
+              {activeMod && (
+                <>
+                  <div style={{padding:"11px 16px",borderBottom:`1px solid rgba(255,255,255,.06)`,display:"flex",alignItems:"center",gap:10,background:"rgba(0,0,0,.15)",flexShrink:0}}>
+                    <span style={{fontSize:18,color:activeMod.color}}>{activeMod.icon}</span>
+                    <div>
+                      <div style={{fontSize:13,fontWeight:700}}>{activeMod.label}</div>
+                      <div style={{fontSize:10,color:G.slate}}>{activeMod.desc}</div>
+                    </div>
+                  </div>
+
+                  {/* BRANDING QUICK ACTIONS */}
+                  {activeMod.id==="branding" && (
+                    <div style={{padding:"12px 16px",borderBottom:`1px solid rgba(255,255,255,.06)`,display:"flex",gap:8,flexWrap:"wrap",flexShrink:0,background:"rgba(0,0,0,.1)"}}>
+                      <button style={{...s.btn,fontSize:11}} disabled={quickLoading==="post"} onClick={()=>runQuick(`Crée un post LinkedIn prêt à copier-coller pour Mariam KABA. Basé sur sa vraie expérience : coordination de +30 projets MICE chez Ivoir Trips, Akan festival, Ivorian Comedy Club, gestion de flux +600 participants. Format storytelling, authentique, avec hashtags #OfficeManager #AbidjanPro #CoteIvoire. Maximum 200 mots. Directement publiable aujourd'hui.`,"post")}>
+                        {quickLoading==="post"?"...":"◆ Post LinkedIn du jour"}
+                      </button>
+                      <button style={{...s.btnO,fontSize:11}} disabled={quickLoading==="note"} onClick={()=>runQuick(`Rédige une "Note de Solution" d'une page pour Mariam KABA, style consultante senior Office Manager. Elle cible une entreprise corporate ou une ONG à Abidjan. La note doit : identifier un problème courant (désorganisation administrative, manque de coordination opérationnelle), proposer 3 axes de solution basés sur son expérience réelle (+30 projets, RH 15 collab, logistique internationale), et se conclure par une invitation à un échange. Ton : experte, pas candidate. Format direct et professionnel.`,"note")}>
+                        {quickLoading==="note"?"...":"✉ Note de Solution"}
+                      </button>
+                      <button style={{...s.btnO,fontSize:11}} disabled={quickLoading==="bio"} onClick={()=>runQuick(`Rédige le résumé LinkedIn optimisé pour Mariam KABA. Titre actuel : "Executive Assistant | Office Manager 360° | Remote-Ready | French native · English B2 | Odoo · Excel · ERP". Le résumé doit : accrocher en 2 lignes, valoriser ses +30 projets et son profil remote-ready, inclure ses outils clés, finir par un call to action. Maximum 220 mots. Directement copiable dans LinkedIn.`,"bio")}>
+                        {quickLoading==="bio"?"...":"▤ Résumé LinkedIn"}
+                      </button>
+                      <button style={{...s.btnO,fontSize:11}} disabled={quickLoading==="plan"} onClick={()=>runQuick(`Crée un calendrier éditorial LinkedIn sur 3 semaines pour Mariam KABA. Format : tableau avec date (lundi/mercredi/vendredi), angle du post, format (storytelling/liste/question/before-after), premier draft d'accroche (1-2 lignes). Basé sur ses vraies expériences : évènementiel ivoirien, Office Manager, outils digitaux, remote depuis Abidjan. 9 posts au total.`,"plan")}>
+                        {quickLoading==="plan"?"...":"◉ Planning 3 semaines"}
+                      </button>
+                    </div>
+                  )}
+
+                  {/* QUICK RESULT */}
+                  {(quickResult || quickLoading) && (
+                    <div style={{padding:"12px 16px",borderBottom:`1px solid rgba(255,255,255,.06)`,background:"rgba(201,168,76,.05)",maxHeight:200,overflowY:"auto",flexShrink:0}}>
+                      <div style={{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:8}}>
+                        <span style={{fontSize:10,color:G.gold,textTransform:"uppercase",letterSpacing:".1em",fontWeight:700}}>Résultat généré</span>
+                        <button style={{...s.btnO,fontSize:10,padding:"3px 10px"}} onClick={()=>setQuickResult("")}>✕</button>
+                      </div>
+                      {quickLoading ? <div style={{fontSize:12,color:G.slate}}>Génération en cours...</div> :
+                        <div style={{fontSize:12,color:G.slateL,lineHeight:1.7,whiteSpace:"pre-wrap"}} dangerouslySetInnerHTML={{__html:fmt(quickResult)}}/>}
+                    </div>
+                  )}
+
+                  <div style={{flex:1,overflowY:"auto",padding:"16px",display:"flex",flexDirection:"column",gap:12}}>
+                    {chat.map((m,i)=>(
+                      <div key={i} style={{display:"flex",justifyContent:m.role==="mentor"?"flex-start":"flex-end"}}>
+                        <div style={s.cb(m.role)} dangerouslySetInnerHTML={{__html:fmt(m.text)}}/>
+                      </div>
+                    ))}
+                    {loading && (
+                      <div style={{display:"flex"}}>
+                        <div style={{...s.cb("mentor"),opacity:.6}}>
+                          <span>◎ </span><span style={{color:G.slate}}>Analyse en cours...</span>
+                        </div>
+                      </div>
+                    )}
+                    <div ref={chatEnd}/>
+                  </div>
+
+                  {/* QUICK SUGGESTIONS */}
+                  {activeMod.id==="cv" && chat.length<=1 && (
+                    <div style={{padding:"8px 16px",display:"flex",gap:7,flexWrap:"wrap",flexShrink:0}}>
+                      {["Analyse mon CV actuel","Adapte mon CV pour une ONG","Reformule mon profil en anglais","Quels mots-clés ATS me manquent ?"].map((q,i)=>(
+                        <button key={i} style={{...s.btnO,fontSize:10,padding:"5px 10px"}} onClick={()=>{setInput(q)}}>{q}</button>
+                      ))}
+                    </div>
+                  )}
+                  {activeMod.id==="entretien" && chat.length<=1 && (
+                    <div style={{padding:"8px 16px",display:"flex",gap:7,flexWrap:"wrap",flexShrink:0}}>
+                      {["Simule un entretien Office Manager","Question sur mes prétentions salariales","Comment répondre sur le voile ?","Entretien en anglais pour un poste remote"].map((q,i)=>(
+                        <button key={i} style={{...s.btnO,fontSize:10,padding:"5px 10px"}} onClick={()=>setInput(q)}>{q}</button>
+                      ))}
+                    </div>
+                  )}
+
+                  <div style={{padding:"10px 14px",borderTop:`1px solid rgba(255,255,255,.06)`,background:"rgba(0,0,0,.2)",display:"flex",gap:9,alignItems:"flex-end",flexShrink:0}}>
+                    <textarea ref={inputRef} style={{...s.ta,flex:1,minHeight:42,maxHeight:110,fontSize:13}} value={input}
+                      onChange={e=>setInput(e.target.value)}
+                      onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();sendChat();}}}
+                      placeholder="Écris ici… (Entrée pour envoyer)"/>
+                    <button style={s.btn} onClick={sendChat} disabled={loading||!input.trim()}>
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke={G.navy} strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                        <line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/>
+                      </svg>
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
+    const root = ReactDOM.createRoot(document.getElementById("root"));
+    root.render(<App />);
+  </script>
+</body>
+</html>
